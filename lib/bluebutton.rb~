@@ -7,8 +7,6 @@ class Bluebutton
   attr_accessor :on_longdown
   attr_accessor :on_longup
   attr_accessor :device
-  attr_accessor :on_pushandroid
-  attr_accessor :on_pushios
 
   def initialize name
     @finder = Finder.new(name)
@@ -26,26 +24,14 @@ class Bluebutton
   end
 
   def run
-    hasEnter = 0
     File.open(@device, 'rb' ) do |input|
       DeviceInput.read_loop(input) do |event|
         if event.type == 'EV_KEY'
           #puts event
           if event.value > 0
             key_down event
-            if event.code == 'Enter'
-              hasEnter=1
-            end
           else
             key_up event
-            if hasEnter == 1
-              if event.code == 'Enter'
-                @on_pushandroid.call if @on_pushandroid
-                hasEnter = 0
-              end
-            else
-              @on_pushios.call if @on_pushios
-            end
           end
         end
       end
